@@ -371,3 +371,16 @@ mycar.show();
 The super() method refers to the parent class.
 By calling the super() method in the constructor method, we call the parent's constructor method and get access to the parent's properties and methods.
 
+Arrow Functions
+Arrow functions allow us to write shorter function syntax:
+ExampleGet your own React.js Server
+Before:
+
+hello = function() {
+  return "Hello World!";
+}
+
+It gets shorter! If the function has only one statement, and the statement returns a value, you can remove the brackets and the return keyword:
+Example
+Arrow Functions Return Value by Default:
+hello = () => "Hello World!";
