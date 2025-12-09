@@ -811,3 +811,228 @@ function Car() {
   );
 }
 
+Function Calls
+Function calls are valid expressions. Insert function calls in JSX by wrapping it in curly braces { }.
+Example
+Use a function inside JSX:
+function kwtohp(kw) {
+  return kw * 1.36;
+}
+function Car() {
+  return (
+    <>
+      <h1>My car</h1>
+      <p>It has {kwtohp(218)} horsepower</p>
+    </>
+  );
+}
+
+Object Properties
+Access object properties within JSX:
+Example
+Refer to an object property inside JSX:
+function Car() {
+  const myobj = {
+    name: "Fiat",
+    model: "500",
+    color: "white"
+  };
+  return (
+    <>
+      <h1>My car is a {myobj.color} {myobj.name} {myobj.model}</h1>
+    </>
+  );
+}
+
+React JSX Attributes
+JSX allows you to insert attributes into HTML elements, but there are a few important differences.
+class = className
+The class attribute is a much used attribute in HTML, but since JSX is rendered as JavaScript, and the class keyword is a reserved word in JavaScript, you are not allowed to use it in JSX.
+JSX solved this by using className instead. When JSX is rendered, it translates className attributes into class attributes.
+ExampleGet your own React.js Server
+Use attribute className instead of class in JSX:
+function Car() {
+  return (
+    <h1 className="myclass">Hello World</h1>
+  );
+}
+
+Expressions as Attributes
+You can also use JavaScript expressions as attribute values. This is very useful for dynamic attributes.
+Example
+Use JavaScript expressions as attribute values:
+function Car() {
+  const x = "myclass";
+  return (
+    <h1 className={x}>Hello World</h1>
+  );
+}
+
+Note that the attribute value is not wrapped in quotes, this is important when using expressions (JavaScript variables) as attribute values. If you use quotes, JSX will treat it as a string literals and not a JavaScript expression.
+
+camelCase Event Attributes
+Event attributes in JSX are written in camelCase.
+Example
+Use camelCase for event attributes:
+function Car() {
+  const myfunc = () => {
+    alert('Hello World');
+  };
+  return (
+    <button onClick={myfunc}>Click me</button>
+  );
+}
+
+Boolean Attributes
+If you pass no value for an attribute, JSX treats it as true. To pass false, you must specify it as an expression.
+Example
+Boolean true in JSX, this will make the button disabled:
+<button onClick={myfunc} disabled>Click me</button>
+
+The style Attribute
+The style attribute in JSX only accepts a JavaScript object with camelCased CSS property names, rather than a CSS string (as in HTML).
+Example
+Use the style attribute:
+function Car() {
+  const mystyles = {
+    color: "red",
+    fontSize: "20px",
+    backgroundColor: "lightyellow",
+  };
+  return (
+    <>
+      <h1 style={mystyles}>My car</h1>
+    </>
+  );
+}
+
+Conditions - if statements
+React supports if statements, but not inside JSX.
+To be able to use conditional statements in JSX, you should put the if statements outside of the JSX, or you could use a ternary expression instead:
+Option 1:
+Write if statements outside of the JSX code:
+ExampleGet your own React.js Server
+Write "Banana" if x is less than 10, otherwise "Apple":
+function Fruit() {
+  const x = 5;
+  let y = "Apple";
+  if (x < 10) {
+    y = "Banana";
+  }
+  return (
+    <h1>{y}</h1>
+  );
+}
+
+React Components
+Components are independent and reusable bits of code. They serve the same purpose as JavaScript functions, but work in isolation and return HTML.
+Components come in two types, Class components and Function components, in this tutorial we will concentrate on Function components.
+In older React code bases, you may find Class components primarily used.
+It is now suggested to use Function components along with Hooks, instead of Class components.
+Class components are still supported, check the Class components section for more information.
+Create Your First Component
+When creating a React component, the component's name MUST start with an upper case letter.
+React components returns HTML code.
+ExampleGet your own React.js Server
+Create a Function component called Car
+function Car() {
+  return (
+    <h2>Hi, I am a Car!</h2>
+  );
+}
+
+Rendering a Component
+Now your React application has a component called Car, which returns an <h2> element.
+To use this component in your application, refer to it like this: <Car />
+Example
+Display the Car component in the "root" element:
+createRoot(document.getElementById('root')).render(
+  <Car />
+)
+
+Props
+Arguments can be passed into a component as props, which stands for properties.
+You send the arguments into the component as HTML attributes.
+You will learn more about props in our React Props chapter.
+Example
+Use an attribute to pass a color to the Car component, and use it in the render function:
+function Car(props) {
+  return (
+    <h2>I am a {props.color} Car!</h2>
+  );
+}
+createRoot(document.getElementById('root')).render(
+  <Car color="red"/>
+);
+
+Components in Components
+We can refer to components inside other components:
+Example
+Use the Car component inside the Garage component:
+function Car() {
+  return (
+    <h2>I am a Car!</h2>
+  );
+}
+function Garage() {
+  return (
+    <>
+      <h1>Who lives in my Garage?</h1>
+      <Car />
+    </>
+  );
+}
+createRoot(document.getElementById('root')).render(
+  <Garage />
+);
+
+Rendering a Component Twice
+We can render a component multiple times:
+Example
+Use the Car component twice inside the Garage component:
+function Car() {
+  return (
+    <h2>I am a Car!</h2>
+  );
+}
+function Garage() {
+  return (
+    <>
+      <h1>Who lives in my Garage?</h1>
+      <Car />
+      <Car />
+    </>
+  );
+}
+createRoot(document.getElementById('root')).render(
+  <Garage />
+);
+
+Components in Files
+React is all about re-using code, and it can be a good idea to split your components into separate files.
+To do that, create a new file in the src folder with a .jsx file extension and put the code inside it:
+Note that the filename must start with an uppercase character.
+Example
+This is the new file, we named it Vehicle.jsx:
+Vehicle.jsx
+function Car() {
+  return (
+    <h2>Hi, I am a Car!</h2>
+  );
+}
+export default Car;
+
+React Components
+Components are independent and reusable bits of code. They serve the same purpose as JavaScript functions, but work in isolation and return HTML via a render function.
+Components come in two types, Class components and Function components, in this chapter you will learn about Class components.
+Create a Class Component
+When creating a React component, the component's name must start with an upper case letter.
+The component has to include the extends React.Component statement, this statement creates an inheritance to React.Component, and gives your component access to React.Component's functions.
+The component also requires a render() method, this method returns HTML.
+ExampleGet your own React.js Server
+Create a Class component called Car
+class Car extends React.Component {
+  render() {
+    return <h2>Hi, I am a Car!</h2>;
+  }
+}
