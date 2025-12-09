@@ -1645,3 +1645,475 @@ function Parent() {
 createRoot(document.getElementById('root')).render(
   <Parent />
 );
+
+React Events
+Just like HTML DOM events, React can perform actions based on user events.
+React has the same events as HTML: click, change, mouseover etc.
+
+Adding Events
+React events are written in camelCase syntax:
+onClick instead of onclick.
+React event handlers are written inside curly braces:
+onClick={shoot}  instead of onclick="shoot()".
+
+React:Get your own React.js Server
+<button onClick={shoot}>Take the Shot!</button>
+HTML:
+<button onclick="shoot()">Take the Shot!</button>
+Example:
+Put the shoot function inside the Football component:
+function Football() {
+  const shoot = () => {
+    alert("Great Shot!");
+  }
+  return (
+    <button onClick={shoot}>Take the shot!</button>
+  );
+}
+createRoot(document.getElementById('root')).render(
+  <Football />
+);
+
+REMOVE ADS
+
+Passing Arguments
+To pass an argument to an event handler, use an arrow function.
+Example:
+Send "Goal!" as a parameter to the shoot function, using arrow function:
+function Football() {
+  const shoot = (a) => {
+    alert(a);
+  }
+  return (
+    <button onClick={() => shoot("Goal!")}>Take the shot!</button>
+  );
+}
+createRoot(document.getElementById('root')).render(
+  <Football />
+);
+
+React Event Object
+Event handlers have access to the React event that triggered the function.
+In our example the event is the "click" event.
+Example:
+Arrow Function: Sending the event object manually:
+function Football() {
+  const shoot = (a, b) => {
+    alert(b.type);
+    /*
+    'b' represents the React event that triggered the function,
+    in this case the 'click' event
+    */
+  }
+  return (
+    <button onClick={(event) => shoot("Goal!", event)}>Take the shot!</button>
+  );
+}
+createRoot(document.getElementById('root')).render(
+  <Football />
+);
+
+if Statement
+We can use the if JavaScript operator to decide which component to render.
+Example:Get your own React.js Server
+We'll use these two components:
+function MissedGoal() {
+  return <h1>MISSED!</h1>;
+}
+function MadeGoal() {
+  return <h1>Goal!</h1>;
+}
+
+Logical && Operator
+Another way to conditionally render a React component is by using the && operator.
+In the example below, the heading will only be rendered if the props.brand property is not empty:
+Example:
+The right side of && will only be rendered if the left side is true:
+function Car(props) {
+  return (
+    <>
+      {props.brand && <h1>My car is a {props.brand}!</h1>}
+    </>
+  );
+}
+createRoot(document.getElementById('root')).render(
+  <Car brand="Ford" />
+);
+If props.brand evaluates to true, the expression after && will render.
+
+Ternary Operator
+Another way to conditionally render elements is by using a ternary operator.
+condition ? true : false
+
+React Lists
+In React, you will render lists with some type of loop.
+The JavaScript map() array method is generally the preferred method.
+If you need a refresher on the map() method, check out the ES6 Array map() section.
+Example:Get your own React.js Server
+Let's create a simple list using the map() method:
+function MyCars() {
+  const cars = ['Ford', 'BMW', 'Audi'];
+  return (
+    <>
+      <h1>My Cars:</h1>
+      <ul>
+        {cars.map((car) => <li>I am a { car }</li>)}
+      </ul>
+    </>
+  );
+}
+createRoot(document.getElementById('root')).render(
+  <MyCars />
+);
+
+Keys in React Lists
+Keys allow React to keep track of elements. This way, if an item is updated or removed, only that item will be re-rendered instead of the entire list.
+Keys must be unique among siblings, but they don't have to be unique across the entire application.
+Generally, the key should be a unique ID assigned to each item. As a last resort, you can use the array index as a key.
+Example:
+Here the example from above, with keys:
+function MyCars() {
+  const cars = [
+    {id: 1001, brand: 'Ford'},
+    {id: 1002, brand: 'BMW'},
+    {id: 1003, brand: 'Audi'}
+  ];
+  return (
+    <>
+      <h1>My Cars:</h1>
+      <ul>
+        {cars.map((car) => <li key={car.id}>I am a { car.brand }</li>)}
+      </ul>
+    </>
+  );
+}
+createRoot(document.getElementById('root')).render(
+  <MyCars />
+);
+
+Using Array Index as Keys
+While it's possible to use the array index as a key, it's not recommended unless:
+The list is static (won't change)
+The list will never be reordered or filtered
+The items in the list have no IDs
+Example:
+Using array indexes as keys (not recommended for dynamic lists):
+function MyCars() {
+  const cars = ['Ford', 'BMW', 'Audi'];
+  return (
+    <>
+      <h1>My Cars:</h1>
+      <ul>
+        {cars.map((car, index) => <li key={index}>I am a { car }</li>)}
+      </ul>
+    </>
+  );
+}
+createRoot(document.getElementById('root')).render(
+  <MyCars />
+);
+
+Adding Forms in React
+You add a form with React like any other element:
+Example:Get your own React.js Server
+Add a form that allows users to enter their name:
+function MyForm() {
+  return (
+    <form>
+      <label>Enter your name:
+        <input type="text" />
+      </label>
+    </form>
+  )
+}
+createRoot(document.getElementById('root')).render(
+  <MyForm />
+);
+
+This will work as normal, the form will submit and the page will refresh.
+But this is generally not what we want to happen in React.
+We want to prevent this default behavior and let React control the form.
+
+HTML Forms vs. React Forms
+In React, form elements like <input>, <textarea>, and <select> work a bit differently from traditional HTML.
+In standard HTML, form elements maintain their own value based on user input.
+For example, an <input type="text"> field keeps track of its own value in the HTML DOM.
+In React, the value of the form element is kept in the component's state property and updated only with the setState() function.
+In other words; React provides a way to manage form data through component state, leading to what are known as "controlled components."
+
+Controlled Components
+In a controlled component, form data is handled by the React component.
+The value of the input element is driven by the React state, and any changes to that value are managed through event handlers that update the state.
+When the data is handled by the components, all the data is stored in the component state.
+We can use the useState Hook to keep track of each input value and provide a "single source of truth" for the entire application.
+See the React Hooks section for more information on Hooks.
+
+Example:
+Use the useState Hook to manage the input:
+import { useState } from 'react';
+import { createRoot } from 'react-dom/client';
+function MyForm() {
+  const [name, setName] = useState("");
+
+  function handleChange(e) {
+    setName(e.target.value);
+  }
+  return (
+    <form>
+      <label>Enter your name:
+        <input
+          type="text" 
+          value={name}
+          onChange={handleChange}
+        />
+      </label>
+      <p>Current value: {name}</p>
+    </form>
+  )
+}
+createRoot(document.getElementById('root')).render(
+  <MyForm />
+);
+
+Initial Values
+To add an initial value to the input field in the example above, add a value to the useState object:
+Example:
+Use initial value for name:
+function MyForm() {
+  const [name, setName] = useState("John");
+
+Submitting Forms
+You can control the submit action by adding an event handler in the onSubmit attribute for the <form>:
+Example:Get your own React.js Server
+Add a submit button and an event handler in the onSubmit attribute:
+import { useState } from 'react';
+import { createRoot } from 'react-dom/client';
+function MyForm() {
+  const [name, setName] = useState("");
+
+  function handleChange(e) {
+    setName(e.target.value);
+  }
+  function handleSubmit(e) {
+    e.preventDefault();
+    alert(name);
+  }
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>Enter your name:
+        <input
+          type="text" 
+          value={name}
+          onChange={handleChange}
+        />
+      </label>
+      <input type="submit" />
+    </form>
+  )
+}
+createRoot(document.getElementById('root')).render(
+  <MyForm />
+);
+
+Textarea
+The textarea element in React is slightly different from ordinary HTML.
+In HTML the value of a textarea is the text between the start tag <textarea> and the end tag </textarea>.
+<textarea>
+  Content of the textarea.
+</textarea>
+
+Select
+A drop down list, or a select box, in React is also a bit different from HTML.
+In HTML, the selected value in the drop down list is defined with the selected attribute:
+HTML:Get your own React.js Server
+<select>
+  <option value="Ford">Ford</option>
+  <option value="Volvo" selected>Volvo</option>
+  <option value="Fiat">Fiat</option>
+</select>
+
+Handling Multiple Inputs
+When you have multiple controlled input fields in a form, you can manage their state either by:
+1. Using a separate useState call for each input.
+2. Using a single useState call with an object to hold all form field values.
+We will use the second approach, as it is more common for forms.
+Make sure each input field has a unique name attribute.
+Also, when initializing the state, use an object instead of a string. If the input fields have no initial value, use an empty object.
+Example:Get your own React.js Server
+Use the useState Hook to manage the input:
+import { useState } from 'react';
+import { createRoot } from 'react-dom/client';
+function MyForm() {
+  const [inputs, setInputs] = useState({});
+  const handleChange = (e) => {
+    const name = e.target.name;
+    const value = e.target.value;
+    setInputs(values => ({...values, [name]: value}))
+  }
+  return (
+    <form>
+      <label>First name:
+      <input 
+        type="text" 
+        name="firstname" 
+        value={inputs.firstname} 
+        onChange={handleChange}
+      />
+      </label>
+      <label>Last name:
+        <input 
+          type="text" 
+          name="lastname" 
+          value={inputs.lastname} 
+          onChange={handleChange}
+        />
+      </label>
+      <p>Current values: {inputs.firstname} {inputs.lastname}</p>
+    </form>
+  )
+}
+createRoot(document.getElementById('root')).render(
+  <MyForm />
+);
+
+Initial Values
+To add initial values to the input fields in the example above, add the proper keys and values to the useState object:
+Example:
+Use initial values for firstname and lastname:
+function MyForm() {
+  const [inputs, setInputs] = useState({
+    firstname: 'John',
+    lastname: 'Doe'
+  });
+
+Checkbox
+For checkboxes, use the checked attribute instead of value to control its state.
+We'll use the useState Hook to manage the value of the textarea:
+In the handleChange function, use the e.target.type property check if the current input is a checkbox or not.
+Example:Get your own React.js Server
+React uses the checked attribute to control the checkbox:
+import { useState } from 'react';
+import { createRoot } from 'react-dom/client';
+function MyForm() {
+  const [inputs, setInputs] = useState({});
+  const handleChange = (e) => {
+    const target = e.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const name = target.name;
+    setInputs(values => ({...values, [name]: value}))
+  }
+  const handleSubmit = (event) => {
+    let fillings = '';
+    if (inputs.tomato) fillings += 'tomato';
+    if (inputs.onion) {
+      if (inputs.tomato) fillings += ' and ';
+      fillings += 'onion';
+    }
+    if (fillings == '') fillings = 'no fillings';
+    alert(`${inputs.firstname} wants a burger with ${fillings}`);
+    event.preventDefault();
+  };
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>My name is:
+      <input 
+        type="text" 
+        name="firstname" 
+        value={inputs.firstname} 
+        onChange={handleChange}
+      />
+      </label>
+      <p>I want a burger with:</p>
+      <label>Tomato:
+      <input 
+        type="checkbox" 
+        name="tomato" 
+        checked={inputs.tomato} 
+        onChange={handleChange}
+      />
+      </label>
+      <label>Onion:
+        <input 
+          type="checkbox" 
+          name="onion" 
+          checked={inputs.onion} 
+          onChange={handleChange}
+        />
+      </label>
+      <button type="submit">Submit
+    </form>
+  )
+}
+createRoot(document.getElementById('root')).render(
+  <MyForm />
+);
+
+Initial Values
+To add initial values to the input fields in the example above, add the proper keys and values to the useState object:
+Example:
+Use initial values for the input fields:
+function MyForm() {
+  const [inputs, setInputs] = useState({
+    firstname: 'John',
+    tomato: true,
+    onion: false
+});
+
+Radio
+Radio buttons are typically used in groups where only one option can be selected.
+All radio buttons in a group should share the same name attribute.
+You control radio buttons based on whether the radio button's value matches the selected value in your state.
+
+Example:Get your own React.js Server
+React uses the checked attribute to control the radio button:
+import { useState } from 'react';
+import { createRoot } from 'react-dom/client';
+function MyForm() {
+  const [selectedFruit, setSelectedFruit] = useState('banana');
+  const handleChange = (event) => {
+    setSelectedFruit(event.target.value);
+  };
+  const handleSubmit = (event) => {
+    alert(`Your favorite fruit is: ${selectedFruit}`);
+    event.preventDefault();
+  };
+  return (
+    <form onSubmit={handleSubmit}>
+      <p>Select your favorite fruit:</p>
+      <label>
+        <input 
+          type="radio" 
+          name="fruit" 
+          value="apple" 
+          checked={selectedFruit === 'apple'} 
+          onChange={handleChange} 
+        /> Apple
+      </label>
+      <br />
+      <label>
+        <input 
+          type="radio" 
+          name="fruit" 
+          value="banana" 
+          checked={selectedFruit === 'banana'} 
+          onChange={handleChange} 
+        /> Banana
+      </label>
+      <br />
+      <label>
+        <input 
+          type="radio" 
+          name="fruit" 
+          value="cherry" 
+          checked={selectedFruit === 'cherry'} 
+          onChange={handleChange} 
+        /> Cherry
+      </label>
+      <br />
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+createRoot(document.getElementById('root')).render(
+  <MyForm />
+);
