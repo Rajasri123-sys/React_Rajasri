@@ -2117,3 +2117,1281 @@ function MyForm() {
 createRoot(document.getElementById('root')).render(
   <MyForm />
 );
+
+What are React Portals?
+A Portal is a React method that is included in the react-dom package.
+It is used to render HTML outside the parent component's DOM hierarchy.
+Normally the returned HTML element is a child of the parent component, and returned like this:
+ExampleGet your own React.js Server
+Without using the createPortal method:
+function myChild() {
+  return (
+    <div>
+      Welcome
+    </div>
+  );
+}
+Syntax
+import { createPortal } from 'react-dom';
+
+createPortal(children, domNode)
+
+Creating a Modal with Portal
+React Portals are particularly useful for components like modals, tooltips, and dialogs that need to break out of their container's layout.
+Here is an example of a modal component where the modal is rendered outside the parent component's DOM hierarchy:
+
+Example
+import { createRoot } from 'react-dom/client';
+import { useState } from 'react';
+import { createPortal } from 'react-dom';
+function Modal({ isOpen, onClose, children }) {
+  if (!isOpen) return null;
+  return createPortal(
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    }}>
+      <div style={{
+        background: 'white',
+        padding: '20px',
+        borderRadius: '8px'
+      }}>
+        {children}
+        <button onClick={onClose}>Close</button>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+function MyApp() {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div>
+      <h1>My App</h1>
+      <button onClick={() => setIsOpen(true)}>
+        Open Modal
+      </button>
+
+      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+        <h2>Modal Content</h2>
+        <p>This content is rendered outside the App component!</p>
+      </Modal>
+    </div>
+  );
+}
+createRoot(document.getElementById('root')).render(
+  <MyApp />
+)
+
+Why Use Portals
+Portals are particularly useful for:
+
+Modals and dialogs
+Tooltips
+Floating menus
+Notifications
+Any UI element that needs to "break out" of its container's layout, especially when the parent component has:
+
+overflow: hidden
+z-index conflicts
+Complex positioning requirements
+Event Bubbling in Portals
+Even though a portal renders content in a different part of the DOM tree, events from the portal content still bubble up through the React component tree as if the portal wasn't there.
+
+For example, if a button inside a portal is clicked, the event will still bubble up to the parent component, and the parent component's event handler will be triggered.
+
+Example
+Click the button to demonstrate that both the button and the parent div element will have its onClick event triggered:
+
+import { createRoot } from 'react-dom/client';
+import { useState } from 'react';
+import { createPortal } from 'react-dom';
+
+function PortalButton({ onClick, children }) {
+  return createPortal(
+    <button 
+      onClick={onClick}
+      style={{
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        padding: '10px',
+        background: 'blue',
+        color: 'white'
+      }}>
+      {children}
+    </button>,
+    document.body
+  );
+}
+
+function App() {
+  const [count1, setCount1] = useState(0);
+  const [count2, setCount2] = useState(0);
+
+  return (
+    <div
+      style={{
+        padding: '20px',
+        border: '2px solid black',
+        margin: '20px'
+      }}
+      onClick={() => {
+        setCount1(c => c + 1);
+      }}>
+      <h2>Div Clicked: {count1}</h2>
+      <h2>Button Clicked: {count2}</h2>      
+      <p>The floating button is rendered outside this box using a portal,
+          but its clicks still bubble up to this parent div!</p>
+      <p>Try to click the div element as well, to see the count increase</p>
+      
+      <PortalButton
+        onClick={(e) => {
+          // This runs first
+          setCount2(c => c + 1);
+        }}>
+        Floating Button
+      </PortalButton>
+    </div>
+  );
+}
+createRoot(document.getElementById('root')).render(
+  <App />
+);
+Example Explained
+In this example:
+
+The PortalButton component is rendered as a floating button fixed to the bottom-right corner of the screen using a portal
+Even though the button exists outside the parent <div> in the DOM, clicking it will:
+First trigger the button's own onClick handler (incrementing the counter)
+Then trigger the parent div's onClick handler
+This demonstrates that event bubbling works through React's component hierarchy, not the DOM hierarchy
+
+What is Suspense?
+Suspense is a React feature that lets your components display an alternative HTML while waiting for code or data to load.
+
+The most common use cases are:
+
+Data fetching with suspense-enabled frameworks
+Loading components dynamically with React.lazy()
+Using Suspense
+If a component takes time to load, you can use a Suspense component, and it will display the fallback content while the component is loading.
+
+ExampleGet your own React.js Server
+The Fruits component takes two seconds to load, so we wrap it in a Suspense component to display a loading message while it is loading.
+
+import { createRoot } from 'react-dom/client';
+import { Suspense } from 'react';
+import Fruits from './Fruits';
+
+function App() {
+  return (
+    <div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Fruits />
+      </Suspense>
+    </div>
+  );
+}
+
+createRoot(document.getElementById('root')).render(
+  <App />
+);
+
+Using Suspense with lazy Loading
+Another common use of the Suspense component is when importing components with lazy loading:
+In the example above we had to fake a delay of two seconds to see the loading message. A task like displaying three fruits from an array would be too fast to see the loading message at all.
+But with lazy loading, we can import a component dynamically, and it will display a loading message while it is loading, even if the task is very fast.
+Lets first create an example WITHOUT using lazy loading, where we do not fake a two seconds delay:
+
+Example
+This example is too fast to see the loading message:
+import { createRoot } from 'react-dom/client';
+import { Suspense } from 'react';
+import Cars from './Cars';
+function App() {
+  return (
+    <div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Cars />
+      </Suspense>
+    </div>
+  );
+}
+createRoot(document.getElementById('root')).render(
+  <App />
+);
+Now let us create an example WITH using lazy loading:
+
+Example
+Same example as above, but using lazy loading:
+import { createRoot } from 'react-dom/client';
+import { Suspense, lazy } from 'react';
+const Cars = lazy(() => import('./Cars'));
+function App() {
+  return (
+    <div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Cars />
+      </Suspense>
+    </div>
+  );
+}
+createRoot(document.getElementById('root')).render(
+  <App />
+);
+
+Example Explained
+lazy() lets you load a component dynamically
+Suspense shows a fallback while the component loads
+Multiple Components
+One Suspense component can wrap multiple lazy components:
+Example
+import { createRoot } from 'react-dom/client';
+import { Suspense, lazy } from 'react';
+const Header = lazy(() => import('./Header'));
+const Content = lazy(() => import('./Content'));
+const Sidebar = lazy(() => import('./Sidebar'));
+function App() {
+  return (
+    <div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Header />
+        <div style={{ display: 'flex' }}>
+          <Sidebar />
+          <Content />
+        </div>
+      </Suspense>
+    </div>
+  );
+}
+createRoot(document.getElementById('root')).render(
+  <App />
+);
+
+Styling React Using CSS
+There are many ways to style React with CSS, this tutorial will take a closer look at three common ways:
+Inline styling
+CSS stylesheets
+CSS Modules
+Inline Styling
+To style an element with the inline style attribute, the value must be a JavaScript object:
+Example:Get your own React.js Server
+Insert an object with the styling information:
+const Header = () => {
+  return (
+    <>
+      <h1 style={{color: "red"}}>Hello Style!</h1>
+      <p>Add a little style!</p>
+    </>
+  );
+}
+
+camelCased Property Names
+Since the inline CSS is written in a JavaScript object, properties with hyphen separators, like background-color, must be written with camel case syntax:
+Example:
+Use backgroundColor instead of background-color:
+const Header = () => {
+  return (
+    <>
+      <h1 style={{backgroundColor: "lightblue"}}>Hello Style!</h1>
+      <p>Add a little style!</p>
+    </>
+  );
+}
+
+JavaScript Object
+You can also create an object with styling information, and refer to it in the style attribute:
+Example:
+Create a style object named myStyle:
+const Header = () => {
+  const myStyle = {
+    color: "white",
+    backgroundColor: "DodgerBlue",
+    padding: "10px",
+    fontFamily: "Sans-Serif"
+  };
+  return (
+    <>
+      <h1 style={myStyle}>Hello Style!</h1>
+      <p>Add a little style!</p>
+    </>
+  );
+}
+
+CSS Stylesheet
+You can write your CSS styling in a separate file, just save the file with the .css file extension, and import it in your application.
+Example
+Create a new file called "MyStylesheet.css" and insert some CSS code in it:
+MyStylesheet.css
+body {
+  background-color: #282c34;
+  color: white;
+  padding: 40px;
+  font-family: Sans-Serif;
+  text-align: center;
+}
+
+CSS Modules
+Another way of adding styles to your application is to use CSS Modules.
+CSS Modules are convenient for components that are placed in separate files.
+The CSS inside a module is available only for the component that imported it, and you do not have to worry about name conflicts.
+Create the CSS module with the .module.css extension, example: my-style.module.css.
+Example
+Create a new file called "my-style.module.css" and insert some CSS code in it:
+my-style.module.css
+.bigred {
+  color: Tomato;
+  padding: 40px;
+  font-family: Sans-Serif;
+  text-align: center;
+}
+
+What are CSS Modules?
+In React, CSS Modules are CSS files where class names are scoped locally by default.
+Note: CSS Modules are not a part of the React core library, but are supported by many React build tools.
+The CSS file have to have the .module.css extension and can be used by importing it into your React file(s).
+
+Creating a CSS Module
+Let's create a CSS module called Button.module.css, where we style some buttons.
+ExampleGet your own React.js Server
+Create a file named Button.module.css, and insert some styles in it:
+Button.module.css
+.mybutton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+Using a CSS Module
+Import and use the CSS Module in your component:
+Example
+Create a Button component that uses the CSS Module:
+import styles from './Button.module.css';
+function App() {
+  return (
+    <div>
+      <button className={styles.mybutton}>
+        My Button
+      </button>
+    </div>
+  );
+}
+
+Multiple Classes
+In the example above, we only used one class, but let's add more classes:
+Example
+Add more styles in Button.module.css:
+Button.module.css
+.mybutton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.primary {
+  background-color: #007bff;
+  color: white;
+}
+.secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+Composing Classes
+CSS Modules allow you to combine classes using the composes keyword:
+Which means that one class can inherit the styles of another class.
+For the previous example, both the primary and the secondary classes are depending on the styles of the mybutton class.
+This can be done by adding composes: mybutton to the primary and secondary classes:
+
+Example
+Button.module.css
+.mybutton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.primary {
+  composes: mybutton;
+  background-color: #007bff;
+  color: white;
+}
+.secondary {
+  composes: mybutton;
+  background-color: #6c757d;
+  color: white;
+}
+
+Global Classes
+When using CSS Modules, the classes in the .module.css file can only be used in the component that imports them. This is done by prefixing the class name with a hash of the file name and a unique identifier. It is safe to use the same class name in different files, as the names will be unique.
+However, sometimes you want your classes to be available globally, and use them in other components.
+You can do this with the :global syntax:
+Example
+Here is a CSS Module with a global class named .myheader:
+BlueHeader.module.css
+:global(.myheader) {
+  padding: 10px 20px;
+  font-size: 50px;
+  color: white;
+  background-color: dodgerblue;
+}
+The :global wrapper makes the class available for everyone.
+It is simply called .myheader and not prefixed and added a unique identifier like _myheader_q1obu_1
+
+Combine Global and Local Classes
+You can combine global and local classes in the same CSS Module:
+Example
+A CSS Module with both global and local classes:
+MyStyles.module.css
+:global(.myheader) {
+  padding: 10px 20px;
+  font-size: 50px;
+  color: white;
+  background-color: dodgerblue;
+}
+.myparagraph {
+  font-size: 20px;
+  color: white;
+  background-color: purple;
+}
+
+What is CSS-in-JS?
+CSS-in-JS is a styling technique where you can write CSS directly in your JavaScript code.
+
+This approach allows you to:
+
+Write CSS using JavaScript
+Create component-scoped styles
+Use dynamic styles based on props
+Avoid CSS class name conflicts
+In this tutorial, we'll use the popular styled-components library.
+
+Getting Started
+CSS-in-JS is not a part of the React core library, but can be installed using many React build tools, like Vite, Webpack, or Create React App.
+To install styled-components, run the following command:
+npm install styled-components
+Now you can start writing CSS directly in your .jsx files:
+ExampleGet your own React.js Server
+Insert styles directly in the .jsx files:
+import styled from 'styled-components';
+const MyHeader = styled.h1`
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+`;
+function App() {
+  return (
+    <>
+      <MyHeader>Welcome!</MyHeader>
+    </>
+  );
+}
+
+Props in Styled Components
+Another powerful feature of CSS-in-JS is the ability to use props to make styles dynamic.
+Let's create an example where we have two buttons, one primary and one secondary.
+We want to base their background color on the value of the btntype prop:
+
+Example
+import styled from 'styled-components';
+const Button = styled.button`
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: ${props => props.btntype === 'primary' ? '#007bff' : '#6c757d'};
+  color: white;
+  cursor: pointer;
+`;
+function App() {
+  return (
+    <div>
+      <Button btntype="primary">Primary Button</Button>
+      <br />
+      <br />
+      <Button>Secondary Button</Button>
+    </div>
+  );
+}
+
+Extending Styles
+Another way of letting multiple elements have the same styles is to extend existing styled components.
+
+For example, we can create a PrimaryButton and SuccessButton that both have the same styles as the Button component, but they also have separate background colors:
+
+Example
+import styled from 'styled-components';
+
+const Button = styled.button`
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+`;
+
+const PrimaryButton = styled(Button)`
+  background-color: #007bff;
+`;
+
+const SuccessButton = styled(Button)`
+  background-color: #28a745;
+`;
+
+function App() {
+  return (
+    <div>
+      <PrimaryButton>Primary</PrimaryButton>
+      <SuccessButton>Success</SuccessButton>
+    </div>
+  );
+}
+
+Global Styles
+You can also create global styles, which will be given normal class name and will be available for all components:
+Example
+import { createGlobalStyle } from 'styled-components';
+const GlobalStyle = createGlobalStyle`
+  h1 {
+    color: white;
+    background-color: purple;
+    font-family: Arial, sans-serif;
+  }
+  .myparagraph {
+    font-family: courier, monospace;
+    color: blue;
+  }
+`;
+function App() {
+  return (
+    <>
+      <GlobalStyle />
+      <h1>Welcome!</h1>
+      <p className="myparagraph">This paragraph is styled with global styles.</p>
+    </>
+  );
+}
+
+What is React Router?
+React Router is a library that provides routing capabilities for React applications.
+
+Routing means handling navigation between different views.
+
+React Router is the standard routing library for React applications. It enables you to:
+
+Create multiple pages in your single-page application
+Handle URL parameters and query strings
+Manage browser history and navigation
+Create nested routes and layouts
+Implement protected routes for authentication
+Without a router, your React application would be limited to a single page with no way to navigate between different views.
+
+Install React Router
+In the command line, navigate to your project directory and run the following command to install the package:
+
+npm install react-router-dom
+Wrap Your App with BrowserRouter
+Your application must be wrapped with the BrowserRouter component to enable routing:
+
+function App() {
+  return (
+    <BrowserRouter>
+      {/* Your app content */}
+    </BrowserRouter>
+  );
+}
+Create Views
+To demonstrate routing, we'll create three pages (or views) in our application: Home, About, and Contact:
+
+We will create all three views in the same file for simplicity, but you can of course split them into separate files.
+
+ExampleGet your own React.js Server
+function Home() {
+  return <h1>Home Page</h1>;
+}
+
+function About() {
+  return <h1>About Page</h1>;
+}
+
+function Contact() {
+  return <h1>Contact Page</h1>;
+}
+Basic Routing
+React Router uses three main components for basic routing:
+
+Link: Creates navigation links that update the URL
+Routes: A container for all your route definitions
+Route: Defines a mapping between a URL path and a component
+Let's add navigation links and routes for each link:
+
+Example
+Note that we need to import BrowserRouter, Routes, Route, Link from 'react-router-dom'.
+
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+
+function Home() {
+  return <h1>Home Page</h1>;
+}
+
+function About() {
+  return <h1>About Page</h1>;
+}
+
+function Contact() {
+  return <h1>Contact Page</h1>;
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      {/* Navigation */}
+      <nav>
+        <Link to="/">Home</Link> |{" "}
+        <Link to="/about">About</Link> |{" "}
+        <Link to="/contact">Contact</Link>
+      </nav>
+
+      {/* Routes */}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+In this example:
+
+BrowserRouter wraps your app and enables routing functionality
+Link components create navigation links
+Routes and Route define your routing configuration
+Nested Routes
+You can have a Route inside another Route, this is called nested routes.
+
+Nested routes allow you change parts of the page when you navigate to a new URL, while other parts is not changed or reloaded, almost like having a page within a page.
+
+Let's use the example above, and add two new components that will be rendered inside the Products component.
+
+One called CarProducts and one called BikeProducts:
+
+Example
+Note that we also need to import the Outlet component from 'react-router-dom'.
+
+import { BrowserRouter, Routes, Route, Link, Outlet } from 'react-router-dom';
+
+function Home() {
+  return <h1>Home Page</h1>;
+}
+
+function Products() {
+  return (
+    <div>
+      <h1>Products Page</h1>
+      <nav style={{ marginBottom: '20px' }}>
+        <Link to="/products/car">Cars</Link> |{" "}
+        <Link to="/products/bike">Bikes</Link>
+      </nav> 
+      <Outlet /> 
+    </div>
+  );
+}
+
+function CarProducts() {
+  return (
+    <div>
+      <h2>Cars</h2>
+      <ul>
+        <li>Audi</li>
+        <li>BMW</li>
+        <li>Volvo</li>
+      </ul>
+    </div>
+  );
+}
+
+function BikeProducts() {
+  return (
+    <div>
+      <h2>Bikes</h2>
+      <ul>
+        <li>Yamaha</li>
+        <li>Suzuki</li>
+        <li>Honda</li>
+      </ul>
+    </div>
+  );
+}
+
+function Contact() {
+  return <h1>Contact Page</h1>;
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      {/* Navigation */}
+      <nav>
+        <Link to="/">Home</Link> |{" "}
+        <Link to="/products">Products</Link> |{" "}
+        <Link to="/contact">Contact</Link>
+      </nav>
+
+      {/* Routes */}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/products" element={<Products />}>
+          <Route path="car" element={<CarProducts />} />
+          <Route path="bike" element={<BikeProducts />} />
+        </Route>
+        <Route path="/contact" element={<Contact />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+Important notes about the example above:
+
+Outlet:
+The <Outlet /> element in the Products component specifies where to render the child route's content.
+Routes:
+The Routes element contains the routes to CarProducts and BikeProducts as child routes of the Products parent route.
+URL Structure:
+The URL structure is relative to the parent route's path. For example:
+When you navigate to '/products/car', the CarProducts component is rendered.
+When you navigate to '/products/bike', the BikeProducts component is rendered.
+Style Active Links
+There is a special version of the Link component called NavLink that knows whether the link's URL is "active" or not.
+
+The NavLink is especially useful for:
+
+Navigation menus
+Breadcrumbs
+Tabs
+A NavLink is considered active if the current URL matches its to prop.
+
+The NavLink component makes it easier to style active links.
+
+Take the basic example from above, and add styles for active links using NavLink:
+
+Example
+Create a new element called navLinkStyles and replace <Link> with <NavLink> in App.
+
+Note that we also need to import the NavLink component from 'react-router-dom'.
+
+import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
+
+// Style function for active links
+const navLinkStyles = ({ isActive }) => ({
+  color: isActive ? '#007bff' : '#333',
+  textDecoration: isActive ? 'none' : 'underline',
+  fontWeight: isActive ? 'bold' : 'normal',
+  padding: '5px 10px'
+});
+
+function Home() {
+  return <h1>Home Page</h1>;
+}
+
+function About() {
+  return <h1>About Page</h1>;
+}
+
+function Contact() {
+  return <h1>Contact Page</h1>;
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      {/* Navigation with NavLink for active styling */}
+      <nav style={{ marginBottom: '20px' }}>
+        <NavLink to="/" style={navLinkStyles}>Home</NavLink> |{" "}
+        <NavLink to="/about" style={navLinkStyles}>About</NavLink> |{" "}
+        <NavLink to="/contact" style={navLinkStyles}>Contact</NavLink>
+      </nav>
+
+      {/* Routes */}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+URL Parameters
+URL parameters are variables that you can add to your route paths. They are often used to pass data between components.
+
+In the path http://localhost:5173/customer/Tobias, the URL parameter is Tobias.
+
+URL parameters let you create dynamic routes where part of the URL can change. Think of them as variables in your URL.
+
+React Router provides the useParams hook to access these parameters in your components.
+
+Here's a simple example with a greeting page that can say hello to different customers:
+
+Example
+import { BrowserRouter, Routes, Route, Link, useParams } from 'react-router-dom';
+
+function Info() {
+  const { firstname } = useParams();
+  return <h1>Hello, {firstname}!</h1>;
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <nav>
+        <Link to="/customer/Emil">Emil</Link> | 
+        <Link to="/customer/Tobias">Tobias</Link> |
+        <Link to="/customer/Linus">Linus</Link>
+      </nav>
+
+      <Routes>
+        <Route path="/customer/:firstname" element={<Info />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+When to Use Transitions?
+Use transitions when you have:
+A slow operation that might freeze the UI
+Updates that aren't immediately critical
+Search results that take time to display
+Basic Example
+Here's a simple example showing how to use transitions in a search feature:
+ExampleGet your own React.js Server
+import { useState, useTransition } from 'react';
+function SearchBar() {
+  const [text, setText] = useState('');
+  const [results, setResults] = useState('');
+  const [isPending, startTransition] = useTransition();
+
+  const handleChange = (e) => {
+    // Urgent: Update input right away
+    setText(e.target.value);
+
+    // Non-urgent: Update search results
+    startTransition(() => {
+      setResults(e.target.value);
+    });
+  };
+  return (
+    <div>
+      <input value={text} onChange={handleChange} />
+      {isPending ? (
+        <p>Loading...</p>
+      ) : (
+        <p>Search results for: {results}</p>
+      )}
+    </div>
+  );
+}
+In this example:
+The input field updates immediately (urgent update)
+The search results update is marked as a transition (non-urgent)
+The loading message shows while the transition is pending
+Real-World Example
+Here's a more practical example with a slow search feature:
+Example
+import { useState, useTransition } from 'react';
+
+function SearchResults({ query }) {
+  // Simulate slow search results
+  const items = [];
+  if (query) {
+    for (let i = 0; i < 1000; i++) {
+      items.push(<li key={i}>Result for {query} - {i}</li>);
+    }
+  }
+  return <ul>{items}</ul>;
+}
+function App() {
+  const [input, setInput] = useState('');
+  const [query, setQuery] = useState('');
+  const [isPending, startTransition] = useTransition();
+  const handleChange = (e) => {
+    // Urgent: Update input field
+    setInput(e.target.value);
+    
+    // Non-urgent: Update search results
+    startTransition(() => {
+      setQuery(e.target.value);
+    });
+  };
+  return (
+    <div>
+      <input 
+        type="text" 
+        value={input} 
+        onChange={handleChange} 
+        placeholder="Type to search..."
+      />
+      {isPending && <p>Loading results...</p>}
+      <SearchResults query={query} />
+    </div>
+  );
+}
+
+How this example works:
+When you type in the input field, it updates immediately
+The search results update is wrapped in startTransition
+While the results are updating, isPending is true
+The UI stays responsive even with many results
+useTransition Hook
+The useTransition hook returns two items:
+isPending: tells you if a transition is active
+startTransition: function to mark updates as transitions
+
+What is forwardRef?
+forwardRef lets your component pass a reference to one of its children. It's like giving a direct reference to a DOM element inside your component.
+
+Common uses for forwardRef:
+
+Focusing input elements
+Triggering animations
+Measuring DOM elements
+Integrating with third-party libraries
+Basic Example
+Here's a simple example of forwarding a ref to an input element:
+
+ExampleGet your own React.js Server
+import { forwardRef, useRef } from 'react';
+const MyInput = forwardRef((props, ref) => (
+  <input ref={ref} {...props} />
+));
+function App() {
+  const inputRef = useRef();
+  const focusInput = () => {
+    inputRef.current.focus();
+  };
+  return (
+    <div>
+      <MyInput ref={inputRef} placeholder="Type here..." />
+      <button onClick={focusInput}>Focus Input</button>
+    </div>
+  );
+}
+
+Adding a Border
+To demonstrate how HOCs work, let's create a simple example - adding a border to any component:
+
+ExampleGet your own React.js Server
+Create a function that adds a border around whatever component you pass to it:
+// This is our HOC - it adds a border to any component
+function withBorder(WrappedComponent) {
+  return function NewComponent(props) {
+    return (
+      <div style={{ border: '2px solid blue', padding: '10px' }}>
+        <WrappedComponent {...props} />
+      </div>
+    );
+  };
+}
+// Simple component without border
+function Greeting({ name }) {
+  return <h1>Hello, {name}!</h1>;
+}
+// Create a new component with border
+const GreetingWithBorder = withBorder(Greeting);
+function App() {
+  return (
+    <div>
+      <Greeting name="John" />
+      <GreetingWithBorder name="Jane" />
+    </div>
+  );
+}
+
+What is Sass?
+Sass is a CSS pre-processor.
+
+Sass files are executed on the server and sends CSS to the browser.
+
+Sass adds extra features to CSS like variables, nesting, mixins, and more.
+
+You can learn more about Sass in our Sass Tutorial.
+
+Adding Sass to React
+To add Sass to a React project, you need to install the Sass package:
+
+Install the package using npm:
+
+npm install sass
+Now you are ready to include Sass files in your project!
+
+Create a Sass file
+Create a Sass file the same way as you create CSS files, but Sass files have the file extension .scss:
+
+ExampleGet your own React.js Server
+In the newly created .scss file, add some simple styling:
+
+MyStyle.scss
+$myColor: red;
+
+h1 {
+  color: $myColor;
+}
+Import the Sass file
+Import the Sass file in your React component:
+
+Example
+main.jsx
+import { createRoot } from 'react-dom/client';
+import './MyStyle.scss';
+function MyHeader() {
+  return (
+    <h1>My Header</h1>
+  );
+}
+createRoot(document.getElementById('root')).render(
+  <MyHeader />
+);
+You can learn more about Sass in our Sass Tutorial.
+
+Sass Modules
+Sass has many Built-in Modules that you can use to manipulate colors, math, strings, etc.
+One example is the sass:color module.
+It has a function to make a color darker or lighter, just by giving it a percentage:
+
+Example
+MyStyle.scss
+@use 'sass:color';
+$myColor: red;
+h1 {
+  color: $myColor;
+}
+h2 {
+  color: color.adjust($myColor, $lightness: -20%);
+}
+h3 {
+  color: color.adjust($myColor, $lightness: 20%);
+}
+Let us add the headers to our component:
+
+Example
+main.jsx
+import { createRoot } from 'react-dom/client';
+import './MyStyle.scss';
+function MyHeader() {
+  return (
+    <div>
+      <h1>My Header 1</h1>
+      <h2>My Header 2</h2>
+      <h3>My Header 3</h3>
+    </div>
+  );
+}
+createRoot(document.getElementById('root')).render(
+  <MyHeader />
+);
+
+What is a Hook?
+Hooks are functions that let you "hook into" React state and lifecycle features from functional components.
+
+Example:Get your own React.js Server
+Here is an example of a Hook. Don't worry if it doesn't make sense. We will go into more detail in the next section.
+import { useState } from 'react';
+import { createRoot } from 'react-dom/client';
+function FavoriteColor() {
+  const [color, setColor] = useState("red");
+  return (
+    <>
+      <h1>My favorite color is {color}!</h1>
+      <button
+        type="button"
+        onClick={() => setColor("blue")}
+      >Blue</button>
+      <button
+        type="button"
+        onClick={() => setColor("red")}
+      >Red</button>
+      <button
+        type="button"
+        onClick={() => setColor("pink")}
+      >Pink</button>
+      <button
+        type="button"
+        onClick={() => setColor("green")}
+      >Green</button>
+    </>
+  );
+}
+createRoot(document.getElementById('root')).render(
+  <FavoriteColor />
+);
+
+Import useState
+To use the useState Hook, we first need to import it into our component.
+
+Example:Get your own React.js Server
+At the top of your component, import the useState Hook.
+
+import { useState } from "react";
+Notice that we are destructuring useState from react as it is a named export.
+
+To learn more about destructuring, check out the ES6 Destructuring section.
+
+Initialize useState
+We initialize our state by calling useState in our function component.
+
+useState accepts an initial state and returns two values:
+
+The current state.
+A function that updates the state.
+Example:
+Initialize state at the top of the function component.
+
+import { useState } from "react";
+
+function FavoriteColor() {
+  const [color, setColor] = useState("red");
+}
+Notice that again, we are destructuring the returned values from useState.
+The first value, color, is our current state.
+The second value, setColor, is the function that is used to update our state.
+
+Read State
+We can now include our state anywhere in our component.
+
+Example:
+Use the state variable in the rendered component.
+import { useState } from 'react';
+import { createRoot } from 'react-dom/client';
+function FavoriteColor() {
+  const [color, setColor] = useState("red");
+  return <h1>My favorite color is {color}!</h1>
+}
+createRoot(document.getElementById('root')).render(
+  <FavoriteColor />
+);
+
+Update State
+To update our state, we use our state updater function.
+Example:
+Use the state updater function to update the state:
+<button
+  type="button"
+  onClick={() => setColor("blue")}
+>Blue</button>
+We should never directly update state. Ex: color = "blue" is not allowed.
+
+Updating Objects and Arrays in State
+When state is updated, the entire state gets overwritten.
+What if we only want to update the color of our car?
+If we only called setCar({color: "blue"}), this would remove the brand, model, and year from our state.
+We can use the JavaScript spread operator to help us.
+
+Example:
+Use the JavaScript spread operator to update only the color of the car:
+const updateColor = () => {
+  setCar(previousState => {
+    return { ...previousState, color: "blue" }
+  });
+}
+
+React useEffect Hooks
+The useEffect Hook allows you to perform side effects in your components.
+Some examples of side effects are: fetching data, directly updating the DOM, and timers.
+useEffect accepts two arguments. The second argument is optional.
+useEffect(<function>, <dependency>)
+Let's use a timer as an example.
+
+Example:Get your own React.js Server
+Use setTimeout() to count 1 second after initial render:
+import { useState, useEffect } from 'react';
+import { createRoot } from 'react-dom/client';
+function Timer() {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    setTimeout(() => {
+      setCount((count) => count + 1);
+    }, 1000);
+  });
+  return <h1>I've rendered {count} times!</h1>;
+}
+createRoot(document.getElementById('root')).render(
+  <Timer />
+);
+
+Accessing DOM Elements
+The useRef Hook is often used to access DOM elements directly.
+
+First, we create a ref using the useRef Hook: const inputElement = useRef();.
+
+Then, we attach the ref to a DOM element using the ref attribute in JSX: <input type="text" ref={inputElement} />.
+
+Finally, we can access the DOM element using the current property: inputElement.current.
+
+Example:
+Use useRef to focus the input:
+
+import { useRef } from 'react';
+import { createRoot } from 'react-dom/client';
+
+function App() {
+  const inputElement = useRef();
+
+  const focusInput = () => {
+    inputElement.current.focus();
+  };
+
+  return (
+    <>
+      <input type="text" ref={inputElement} />
+      <button onClick={focusInput}>Focus Input</button>
+    </>
+  );
+}
+
+createRoot(document.getElementById('root')).render(
+  <App />
+);
+
+In the example, the input field gets focus when the button is clicked, because the onClick function calls inputElement.current.focus().
+
+Tracking State Changes
+The useRef Hook can also be used to keep track of previous state values.
+This is because we are able to persist useRef values between renders.
+
+Example:
+Use useRef to keep track of previous state values:
+import { useRef, useState, useEffect } from 'react';
+import { createRoot } from 'react-dom/client';
+function App() {
+  const [inputValue, setInputValue] = useState("");
+  const previousInputValue = useRef("");
+
+  useEffect(() => {
+    previousInputValue.current = inputValue;
+  }, [inputValue]);
+
+  return (
+    <>
+      <input
+        type="text"
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+      />
+      <h2>Current Value: {inputValue}</h2>
+      <h2>Previous Value: {previousInputValue.current}</h2>
+    </>
+  );
+}
+createRoot(document.getElementById('root')).render(
+  <App />
+);
+
